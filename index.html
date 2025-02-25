@@ -3,16 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Stock Data</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Live Stock Prices</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #stockTable { margin: auto; border-collapse: collapse; width: 80%; }
+        th, td { padding: 10px; border: 1px solid black; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Live Stock Prices</h1>
-        <input type="text" id="stockSymbol" placeholder="Enter Stock Symbol (e.g., AAPL)">
-        <button onclick="fetchStockData()">Get Price</button>
-        <div id="stockData"></div>
-    </div>
+    <h2>Top 10 Stock Prices</h2>
+    <input type="text" id="searchStock" placeholder="Search Stock Symbol">
+    <button onclick="searchStock()">Search</button>
+    <table id="stockTable">
+        <thead>
+            <tr><th>Symbol</th><th>Price</th><th>Change</th></tr>
+        </thead>
+        <tbody id="stockData"></tbody>
+    </table>
+
     <script src="script.js"></script>
 </body>
 </html>
+
