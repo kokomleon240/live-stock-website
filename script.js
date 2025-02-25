@@ -1,47 +1,43 @@
-const API_KEY = "60S57XWIF5Y1JK6B";  // Replace with actual API Key
-const API_URL = `https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=${API_KEY}`;
+document.addEventListener("DOMContentLoaded", function () {
+  const apiKey = "60S57XWIF5Y1JK6B"; // Replace with your actual API key
+  const apiUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=RELIANCE.BSE&interval=5min&apikey=60S57XWIF5Y1JK6B?apikey=${apiKey}`; // Replace with correct API endpoint
 
-async function fetchStocks() {
-    try {
-        let response = await fetch(API_URL);
-        let data = await response.json();
-        let stocks = data.top_gainers.slice(0, 10);  // Get Top 10 stocks
+  fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("API Response:", data); // Debug: Check actual API response format
 
-        let stockTable = document.getElementById("stockData");
-        stockTable.innerHTML = "";
+      let stocks = data.stocks || data.data || []; // Adjust based on your API's response structure
 
-        stocks.forEach(stock => {
-            let row = `<tr>
-                        <td>${stock.symbol}</td>
-                        <td>${stock.price}</td>
-                        <td>${stock.change_percent}</td>
-                      </tr>`;
-            stockTable.innerHTML += row;
-        });
+      let tableBody = document.getElementById("stock-table-body");
+      tableBody.innerHTML = ""; // Clear old data before updating
 
-    } catch (error) {
-        console.error("Error fetching stock data:", error);
-    }
-}
+      if (stocks.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="3">No stock data available</td></tr>`;
+        return;
+      }
 
-async function searchStock() {
-    let symbol = document.getElementById("searchStock").value.toUpperCase();
-    let searchAPI = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`;
+      stocks.forEach(stock => {
+        let symbol = stock.symbol || "N/A";  // Fix: Handles undefined values
+        let price = stock.price !== undefined ? stock.price : "N/A";  
+        let change = stock.change !== undefined ? stock.change : "N/A";
 
-    try {
-        let response = await fetch(searchAPI);
-        let data = await response.json();
-        let stock = data["Global Quote"];
+        let row = `<tr>
+          <td>${symbol}</td>
+          <td>${price}</td>
+          <td>${change}</td>
+        </tr>`;
 
-        if (stock) {
-            alert(`Stock: ${symbol}\nPrice: ${stock["05. price"]}\nChange: ${stock["10. change percent"]}`);
-        } else {
-            alert("Stock not found!");
-        }
-
-    } catch (error) {
-        console.error("Error fetching stock data:", error);
-    }
-}
-
-fetchStocks();  // Load stocks on page load
+        tableBody.innerHTML += row;
+      });
+    })
+    .catch(error => {
+      console.error("Error fetching stock data:", error);
+      document.getElementById("stock-table-body").innerHTML = `<tr><td colspan="3">Error loading data</td></tr>`;
+    });
+});
